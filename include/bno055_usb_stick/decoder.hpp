@@ -62,17 +62,32 @@ public:
     imu.header = output.header;
     imu.orientation = output.quaternion;
     imu.angular_velocity = output.gyroscope;
-    imu.linear_acceleration = output.acceleration;
+    imu.linear_acceleration = output.linear_acceleration;
+    double zero_delta = 0.2;
+    if (imu.linear_acceleration.x < zero_delta)
+      imu.linear_acceleration.x = 0;
+    if (imu.linear_acceleration.y < zero_delta)
+      imu.linear_acceleration.y = 0;
+    if (imu.linear_acceleration.z < zero_delta)
+      imu.linear_acceleration.z = 0;
 
     // To indicate no covariance estimate, set the 1st elements of matrice -1
-    imu.orientation_covariance[0] = -1;
-    std::fill(imu.orientation_covariance.begin() + 1, imu.orientation_covariance.end(), 0.);
-    imu.angular_velocity_covariance[0] = -1;
-    std::fill(imu.angular_velocity_covariance.begin() + 1, imu.angular_velocity_covariance.end(),
-              0.);
-    imu.linear_acceleration_covariance[0] = -1;
-    std::fill(imu.linear_acceleration_covariance.begin() + 1,
-              imu.linear_acceleration_covariance.end(), 0.);
+    // EDJ - set to zero so filled with defaults.. https://github.com/ccny-ros-pkg/imu_tools/issues/40
+    // on the other hand, use small vals for diagonal
+    std::fill(imu.orientation_covariance.begin(), imu.orientation_covariance.end(), 0.);
+    imu.orientation_covariance[0] = 1e-9;
+    imu.orientation_covariance[4] = 1e-9;
+    imu.orientation_covariance[8] = 1e-9;
+
+    std::fill(imu.angular_velocity_covariance.begin(), imu.angular_velocity_covariance.end(),0.);
+    imu.angular_velocity_covariance[0] = 1e-9;
+    imu.angular_velocity_covariance[4] = 1e-9;
+    imu.angular_velocity_covariance[8] = 1e-9;
+
+    std::fill(imu.linear_acceleration_covariance.begin(),imu.linear_acceleration_covariance.end(), 0.);
+    imu.linear_acceleration_covariance[0] = 1e-9;
+    imu.linear_acceleration_covariance[4] = 1e-9;
+    imu.linear_acceleration_covariance[8] = 1e-9;
 
     return imu;
   }
