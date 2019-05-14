@@ -85,6 +85,13 @@ private:
         commands_.push_back(*command);
       }
     }
+
+    // TODO: refactor?
+    const boost::uint8_t AXIS_MAP_CONFIG = 0x41;
+    for (const boost::uint8_t **command = Constants::writeAddr(AXIS_MAP_CONFIG, 0x21); *command; ++command) {
+      commands_.push_back(*command);
+    }
+
     for (const boost::uint8_t **command = Constants::startStreamCommands(); *command; ++command) {
       commands_.push_back(*command);
     }
